@@ -24,6 +24,7 @@ on:
           - 'PixelOS 14'
           - 'LineageOS 16.0'
           - 'CyanogenMOD 14.1'
+          - 'StatiXOS QPR2'
       BUILD_DIFFERENT_ROM:
         description: "Command to initialize a different 'repo' project:"
         required: false
