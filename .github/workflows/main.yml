@@ -122,7 +122,7 @@ jobs:
         ;;
         "StatiXOS QPR2")
            export PROJECTFOLDER="/crave-devspaces/Statix"
-          export PROJECTID="84"
+          export PROJECTID="82"
           export REPO_INIT="repo init -u https://github.com/StatiXOS/android_manifest.git -b udc-qpr2"
         ;;
         esac
