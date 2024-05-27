@@ -119,6 +119,11 @@ jobs:
           export PROJECTID="83"
           export REPO_INIT="repo init -u https://github.com/accupara/los-cm14.1.git -b cm-14.1 --git-lfs --depth=1"
         ;;
+        "StatiXOS QPR2")
+           export PROJECTFOLDER="/crave-devspaces/Statix"
+          export PROJECTID="89"
+          export REPO_INIT="repo init -u https://github.com/StatiXOS/android_manifest.git -b udc-qpr2"
+        ;;
         esac
         echo "Building on ${{ github.event.inputs.BASE_PROJECT }} project"
         echo "PROJECTFOLDER=$PROJECTFOLDER" >> "$GITHUB_OUTPUT"
