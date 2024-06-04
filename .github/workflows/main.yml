@@ -16,15 +16,8 @@ on:
         default: 'LineageOS 20.0'
         type: choice
         options:
-          - 'LineageOS 20.0'
-          - 'LineageOS 21.0'
-          - 'ArrowOS 13.1'
-          - 'DerpFest 13.0'
           - 'CipherOS 14'
           - 'PixelOS 14'
-          - 'LineageOS 16.0'
-          - 'CyanogenMOD 14.1'
-          - 'StatiXOS QPR2'
       BUILD_DIFFERENT_ROM:
         description: "Command to initialize a different 'repo' project:"
         required: false
@@ -79,27 +72,6 @@ jobs:
       id: proj-variables
       run: |
         case "${{ github.event.inputs.BASE_PROJECT }}" in
-        "ArrowOS 13.1")
-          export PROJECTFOLDER="/crave-devspaces/Arrow13"
-          export PROJECTID="73"
-          export REPO_INIT="repo init -u https://github.com/ArrowOS/android_manifest.git -b arrow-13.1 --depth=1"
-
-        ;;
-        "DerpFest 13.0")
-          export PROJECTFOLDER="/crave-devspaces/DerpFest13"
-          export PROJECTID="64"
-          export REPO_INIT="repo init -u https://github.com/DerpFest-AOSP/manifest.git -b 13 --depth=1"
-        ;;
-        "LineageOS 21.0")
-          export PROJECTFOLDER="/crave-devspaces/Lineage21"
-          export PROJECTID="72"
-          export REPO_INIT="repo init -u https://github.com/LineageOS/android.git -b lineage-21.0 --git-lfs --depth=1"
-        ;;
-        "LineageOS 20.0")
-          export PROJECTFOLDER="/crave-devspaces/Lineage20"
-          export PROJECTID="36"
-          export REPO_INIT="repo init -u https://github.com/accupara/los20.git -b lineage-20.0 --git-lfs --depth=1"
-        ;;
         "CipherOS 14")
           export PROJECTFOLDER="/crave-devspaces/Cipher14"
           export PROJECTID="79"
@@ -109,21 +81,6 @@ jobs:
           export PROJECTFOLDER="/crave-devspaces/Pixel14"
           export PROJECTID="82"
           export REPO_INIT="repo init -u https://github.com/PixelOS-AOSP/manifest.git -b fourteen --git-lfs --depth=1"
-        ;;
-        "LineageOS 16.0")
-          export PROJECTFOLDER="/crave-devspaces/Lineage16"
-          export PROJECTID="81"
-          export REPO_INIT="repo init -u https://github.com/accupara/los16.git -b lineage-16.0 --git-lfs --depth=1"
-        ;;
-        "CyanogenMOD 14.1")
-          export PROJECTFOLDER="/crave-devspaces/Cyanogen14"
-          export PROJECTID="83"
-          export REPO_INIT="repo init -u https://github.com/accupara/los-cm14.1.git -b cm-14.1 --git-lfs --depth=1"
-        ;;
-        "StatiXOS QPR2")
-           export PROJECTFOLDER="/crave-devspaces/Statix"
-          export PROJECTID="82"
-          export REPO_INIT="repo init -u https://github.com/StatiXOS/android_manifest.git -b udc-qpr2"
         ;;
         esac
         echo "Building on ${{ github.event.inputs.BASE_PROJECT }} project"
@@ -349,27 +306,16 @@ jobs:
         fi
 
         crave run --no-patch --${CLEAN} "rm -rf .repo/local_manifests/ ${{ github.event.inputs.REMOVALS }} && \
-        # Clone local_manifests repository
-        $BUILD_DIFFERENT_ROM ; \
-        git clone ${{ github.event.inputs.LOCAL_MANIFEST }} --depth 1 -b ${{ github.event.inputs.LOCAL_MANIFEST_BRANCH }} .repo/local_manifests && \
+        export USE_CCACHE=1 \
+        mkdir WORKSPACE && cd WORKSPACE && repo init -u https://github.com/PixelBuildsROM/android_manifest -b unity --depth=1 && rm -rf device/xiaomi/merlin vendor/xiaomi/merlin device/xiaomi/merlin-kernel && git clone https://github.com/nuuwy0/local_manifest .repo/local_manifests --depth 1 && /opt/crave/resync.sh \
 
-        if [ ! \$? == 0 ]; then \
-          curl -o .repo/local_manifests ${{ github.event.inputs.LOCAL_MANIFEST }}; \
-          echo "Git clone failed, downloading through curl instead..."; \
-        fi \
+        if [ $? -ne 0 ]; then \
+         echo "Error: repo sync failed" \
+         fi \
 
-        # Sync the repositories
-        /opt/crave/resync.sh  && \
+        make installclean && \
+        ./pb-build.sh merlin"
 
-        # Set up build environment
-        export BUILD_USERNAME=${{ github.actor }} ; \
-        export BUILD_HOSTNAME=crave ; \
-
-        echo "Repository: ${{ github.repository }}"; \
-        echo "Run ID: ${{ github.run_id }}"; \
-
-        ./pb-build.sh merlin
-        
       # Send Build 'status' notification
     - name: Telegram Notification
       if:  ${{ success()  || cancelled() || failure() }}
