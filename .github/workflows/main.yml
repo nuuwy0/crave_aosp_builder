@@ -317,7 +317,6 @@ jobs:
           echo "Git clone failed, downloading through curl instead..."; \
         fi \
 
-
         make installclean && \
         ./pb-build.sh merlin"
 
