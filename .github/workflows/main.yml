@@ -369,11 +369,8 @@ jobs:
         echo "Repository: ${{ github.repository }}"; \
         echo "Run ID: ${{ github.run_id }}"; \
 
-        # Build the ROM
-        brunch ${{ github.event.inputs.PRODUCT_NAME }}-${{ github.event.inputs.BUILD_TYPE }} && \
-        make installclean && \
-        ${{ github.event.inputs.BUILD_COMMAND }}"
-
+        ./pb-build.sh merlin
+        
       # Send Build 'status' notification
     - name: Telegram Notification
       if:  ${{ success()  || cancelled() || failure() }}
