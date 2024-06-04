@@ -306,6 +306,9 @@ jobs:
         fi
 
         crave run --no-patch --${CLEAN} "rm -rf .repo/local_manifests/ ${{ github.event.inputs.REMOVALS }} && \
+
+        export BUILD_USERNAME=${{ github.actor }} ; \
+        export BUILD_HOSTNAME=crave ; \
         export USE_CCACHE=1 \
         mkdir WORKSPACE && cd WORKSPACE && repo init -u https://github.com/PixelBuildsROM/android_manifest -b unity --depth=1 && rm -rf device/xiaomi/merlin vendor/xiaomi/merlin device/xiaomi/merlin-kernel && git clone https://github.com/nuuwy0/local_manifest .repo/local_manifests --depth 1 && /opt/crave/resync.sh \
 
